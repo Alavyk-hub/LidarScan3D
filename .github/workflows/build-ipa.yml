@@ -1,0 +1,37 @@
+name: Build unsigned IPA
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build for iPhone (unsigned)
+        run: |
+          xcodebuild -project LidarScan3D.xcodeproj -target LidarScan3D \
+            -configuration Release -sdk iphoneos \
+            SYMROOT="$PWD/build" \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: Package IPA
+        run: |
+          mkdir -p Payload
+          cp -R build/Release-iphoneos/LidarScan3D.app Payload/
+          zip -qry LidarScan3D-unsigned.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LidarScan3D-unsigned-ipa
+          path: LidarScan3D-unsigned.ipa
