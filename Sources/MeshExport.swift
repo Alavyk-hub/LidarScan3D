@@ -159,9 +159,9 @@ enum USDZGeometryLoader {
                 let w = world * SIMD4<Float>(p[0], p[1], p[2], 1)
                 part.vertices.append(SIMD3(w.x, w.y, w.z))
             }
-            for case let sub as MDLSubmesh in ((mesh.submeshes as? [MDLSubmesh]) ?? []) where sub.geometryType == .triangles {
-                let buf = sub.indexBuffer(asIndexType: .uInt32)
-                let ptr = buf.map().bytes.assumingMemoryBound(to: UInt32.self)
+            for sub in (mesh.submeshes as? [MDLSubmesh]) ?? [] where sub.geometryType == .triangles {
+                let map = sub.indexBuffer(asIndexType: .uInt32).map()
+                let ptr = map.bytes.assumingMemoryBound(to: UInt32.self)
                 part.indices.append(contentsOf: UnsafeBufferPointer(start: ptr, count: sub.indexCount))
             }
             result.append(part)
