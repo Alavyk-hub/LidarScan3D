@@ -4,7 +4,7 @@ import ARKit
 
 @main
 struct LidarScanApp: App {
-    var body: some Scene {
+    var body: some SwiftUI.Scene {
         WindowGroup { ContentView() }
     }
 }
